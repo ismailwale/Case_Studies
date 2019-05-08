@@ -10,3 +10,4 @@
 1. [Picking Housing Values with Python](https://github.com/toraaglobal/CaseStudies/blob/master/Choosing_Housing_Values.ipynb)
 1. [Time Series Analysis Using ARIMA](https://github.com/toraaglobal/CaseStudies/blob/master/time_series_api_quandi_stock_analysis.ipynb): Using Quandi API to retrieve Financial Data for Analysis
 1. [Time Series Forcasting Using Prophet](https://github.com/toraaglobal/CaseStudies/blob/master/Time_Series_BeverageTimeForProphet.ipynb): Forcasting Berverages Sales
+1. [Time Series Forcasting Using Prophet](https://github.com/toraaglobal/CaseStudies/blob/master/TimeForRetailProphet.ipynb): Forcasting Deparmental Sales of a Retail Outlets Using Prophet
