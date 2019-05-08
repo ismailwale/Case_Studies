@@ -8,3 +8,4 @@
      * [Rpubs](http://rpubs.com/toraaglobal/picking)
      * [Rmd](https://github.com/toraaglobal/CaseStudies/blob/master/PickingWinners.Rmd)
 * [Picking Housing Values with Python](https://github.com/toraaglobal/CaseStudies/blob/master/Choosing_Housing_Values.ipynb)
+* [Time Series Analysis Using ARIMA](https://github.com/toraaglobal/CaseStudies/blob/master/time_series_api_quandi_stock_analysis.ipynb): Using Quandi API to retrieve Financial Data for Analysis
