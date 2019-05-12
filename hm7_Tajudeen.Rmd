@@ -1,0 +1,606 @@
+---
+title: "Hand Writing Recognision"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Packages
+The following packages will be used for the analysis
+
+```{r load-package}
+## Packages
+library(ggplot2)
+library(RWeka)
+library(e1071)
+library(rpart)
+library(randomForest)
+library(caret)
+library(rbokeh)
+library(dplyr)
+
+library(readr)
+library(grid)
+
+library(descr)
+
+
+```
+
+```{r}
+
+```
+
+
+## Data Pre-processing
+
+The datasets used is from a competition in Kaggle, each image is 28 pixels in height and 28 pixels in width, for a total of 784 pixels in total. Each pixel has a single pixel-value associated with it, indicating the lightness or darkness of that pixel, with higher numbers meaning darker. This pixel-value is an integer between 0 and 255, inclusive.
+The training data set, (train.csv), has 785 columns. The first column, called "label", is the digit that was drawn by the user. The rest of the columns contain the pixel-values of the associated image.
+Each pixel column in the training set has a name like pixelx, where x is an integer between 0 and 783, inclusive. To locate this pixel on the image, suppose that we have decomposed x as x = i * 28 + j, where i and j are integers between 0 and 27, inclusive. Then pixelx is lo The test data set, (test.csv), is the same as the training set, except that it does not contain the "label" column. cated on row i and column j of a 28 x 28 matrix, (indexing by zero).
+Accuracy will be used as the evaluation metrics in selecting the best model for digit recognizer.
+
+## Evaluation Matrics
+
+The target label is balance. The evauation metric that will be used to determing the model performance is the accuracy score.
+The forllowing model will used to create a classifier and the performance of each model will be evaluated using accuracy.
+
+
+
+## Model
+
+1. Random Forest
+1. KNN
+1. SVM
+
+## Load Data
+
+```{r}
+digit_train <- read.csv('../data/wk7-data/Kaggle-digit-train.csv')
+digit_test <- read.csv('../data/wk7-data/Kaggle-digit-test.csv')
+
+#digit_train$label[1:10]
+#summary(digit_train)
+dim(digit_train)
+cat('The dimension of the training data is : ', dim(digit_train), '\n')
+cat("The dimension of the testing data is : ", dim(digit_test))
+
+
+
+```
+
+
+
+## Transform the label feature to ordered factor
+
+```{r}
+
+# change the label to factor
+digit_train$label <- as.ordered(digit_train$label)
+
+cat('The distribution of the target label is shown below: ')
+
+table(digit_train$label)
+
+```
+
+From the abov distribution, we can see that the training datasets label is balance across all classes.
+
+
+## Data quality check
+
+```{r}
+dim(digit_train[, colSums(digit_train != 0) > 0])
+```
+
+
+```{r}
+dim(digit_test[, colSums(digit_test != 0 ) > 0 ])
+```
+
+
+## Create a small subset of the dataset for modeling
+
+```{r}
+ind <- sample(2, nrow(digit_train), replace = TRUE, prob = c(0.9, 0.1))
+
+sub90 <- digit_train[ind==1,]
+sub10 <- digit_train[ind==2,]
+
+cat('sub90 dimension: ', dim(sub90), '\n\n\n')
+cat('sub10 dimension:', dim(sub10))
+
+```
+
+
+## check the label distribution for sub10
+
+```{r}
+
+table(sub10$label)
+
+```
+
+
+## Visualize the datasets
+
+```{r}
+
+#  References https://www.kaggle.com/jameshirschorn/example-handwritten-digits
+
+
+labels   <- digit_train[,1]
+features <- digit_train[,-1]
+
+# Uncomment for reproducability
+# set.seed(1) 
+rowsToPlot <- sample(1:nrow(digit_train), 49)
+
+rowToMatrix <- function(row) {
+  intensity <- as.numeric(row)/max(as.numeric(row))
+  return(t(matrix((rgb(intensity, intensity, intensity)), 28, 28)))
+}
+
+geom_digit <- function(digits) 
+{
+  layer(geom = GeomRasterDigit, stat = "identity", position = "identity", data = NULL, 
+        params = list(digits=digits))  
+}
+
+GeomRasterDigit <- ggproto("GeomRasterDigit", 
+                           ggplot2::GeomRaster, 
+                           draw_panel = function(data, panel_scales, coordinates, digits = digits) {
+                             if (!inherits(coordinates, "CoordCartesian")) {
+                               stop("geom_digit only works with Cartesian coordinates",
+                                    call. = FALSE)
+                             }
+                             corners <- data.frame(x = c(-Inf, Inf), y = c(-Inf, Inf))
+                             bounds <- coordinates$transform(corners, panel_scales)
+                             x_rng <- range(bounds$x, na.rm = TRUE)
+                             y_rng <- range(bounds$y, na.rm = TRUE)
+                             rasterGrob(as.raster(rowToMatrix(digits[data$rows,])), 
+                                        x = mean(x_rng), y = mean(y_rng), 
+                                        default.units = "native", just = c("center","center"), 
+                                        interpolate = FALSE)
+                           }) 
+
+p <- ggplot(data.frame(rows=rowsToPlot, labels=labels[rowsToPlot]), 
+            aes(x=0.1, y=.9, rows=rows, label=labels)) + 
+       geom_blank() + xlim(0,1) + ylim(0,1) + xlab("") + ylab("") + 
+       facet_wrap(~ rows, ncol=7) +
+       geom_digit(features) +
+       geom_text(colour="#53cfff") +
+       theme(panel.background = element_rect(fill = 'black'),
+             panel.border = element_rect(fill = NA, colour = "#cfff53"),
+             panel.grid = element_blank(),
+             strip.background = element_blank(),
+             strip.text.x = element_blank(),
+             axis.text.x = element_blank(),
+             axis.text.y = element_blank(),
+             axis.ticks = element_blank(),
+             axis.line = element_blank()) +
+       ggtitle("Example Handwritten Digits")
+
+plot(p)
+
+```
+
+
+
+
+
+## Split the datasets and prepared it for modeling
+
+The sub10 will be splited into two
+
+```{r}
+
+ind <- sample(2, nrow(sub10), replace = TRUE, prob = c(0.7, 0.3))
+sub70 <- sub10[ind==1,]
+sub30 <- sub10[ind==2,]
+
+cat('sub70 : ', dim(sub70), '\n\n')
+cat('sub30: ', dim(sub30))
+
+```
+
+
+## label distribution
+
+```{r}
+table(sub70$label)
+
+```
+
+```{r}
+table(sub30$label)
+
+```
+
+
+The label distribution is balance.
+
+
+## Create train and test set
+
+The sub30 contains about 1200 samples and the labeldistribution is propotional.
+In other to save computer time, this will be used to train and  sub 70 will be used to test and evaluate the model
+
+```{r}
+
+X_train <- sub30[,-1]
+y_train <- sub30$label
+
+X_test <- sub70[, -1]
+y_test <- sub70$label
+
+X_train_with_label <- sub30
+X_test_with_label <- sub70
+
+
+```
+
+
+
+
+```{r}
+cat('X_train: ', dim(X_train), '\n')
+
+```
+
+
+```{r}
+dim(X_test)
+```
+
+```{r}
+dim(X_train_with_label)
+```
+
+
+# MODELING
+
+
+## Random Forest
+Random forest is developed by aggregation of trees. This can be used for both regression and classification problems. It can deal with large number of features and avoid overfitting. ` params : ntree > default = 500, mtry > default = sq.root(p) for classification, p/3 for regression`.
+p is the number of features.
+
+
+### Model 1
+The first random forest model is build with the default parameters using the randomForest packages in R.
+
+```{r}
+
+(rf_model1 <- randomForest(label ~ ., data = X_train_with_label))
+
+```
+
+
+
+```{r}
+print(rf_model1)
+
+```
+
+
+```{r}
+rf_model1$mtry
+
+```
+
+
+## Make prediction on new datasets
+
+```{r}
+prediction  <- predict(rf_model1, X_test)
+
+```
+
+
+The confusion matrix of the model performance.
+The method is from the package caret.
+
+```{r}
+confusionMatrix(prediction, y_test)
+```
+
+
+
+## Error rate
+```{r}
+plot(rf_model1)
+
+```
+
+
+
+When number of tree is around 200, the error rate become contant and no significatnt improvement.
+
+
+
+## Tune the model parameters
+
+ntreeTry = 200
+
+```{r}
+tuneRF(X_train, y_train,
+       stepFactor = 1,
+       plot = TRUE,
+       ntreeTry = 200,
+       trace = TRUE,
+       improve = 0.1)
+
+```
+
+
+
+## Random Forest Parameters
+ntree = 200
+mtry = 28
+
+## Build a random forest model with ntree = 200, mtry =28
+
+## Model 2
+
+```{r}
+
+rf_model2 <- randomForest(label~.,data = X_train_with_label, ntree=200, mtry=28)
+
+```
+
+```{r}
+print(rf_model2)
+
+```
+
+```{r}
+varImpPlot(rf_model2)
+
+```
+
+
+```{r}
+plot(rf_model2)
+
+```
+
+
+
+
+## Tree size
+
+```{r}
+hist(treesize(rf_model2), main = "Number of nodes for the tree", col='green')
+
+#h <- figure(width = 600, height = 400, xlab = 'Tree Size') %>%
+  #ly_hist(treesize(rf_model2), breaks = 40, freq = FALSE) %>%
+ # ly_density(treesize(rf_model2))
+#h
+
+```
+
+```{r}
+
+varImpPlot(rf_model2, sort = TRUE, n.var = 10, main = "Top 10 important variables")
+
+```
+
+## Prediction
+
+
+
+```{r}
+p2 <- predict(rf_model2, X_test)
+
+confusionMatrix(p2, y_test)
+
+
+
+```
+
+
+## prepared submission to kaggle
+
+```{r}
+prediction <- predict(rf_model2, digit_test)
+
+submission<-data.frame(ImageId=1:nrow(digit_test),Label=prediction)
+
+
+write.csv(submission, file="rfsubmission.csv", row.names=F)
+
+
+```
+
+
+## Save the model
+
+```{r}
+saveRDS(rf_model2, './randomForest_model2_digit.rds')
+
+```
+
+
+
+
+## KNN
+
+
+
+KNN is a supervised learning algorithm, which means we are given a labelled training sample with its corresponding training features to train the model.
+
+
+
+
+## Model 1
+
+```{r}
+k <- round(sqrt(nrow(X_train)))
+
+knn_Model <- class::knn(train = X_train, test = X_test, cl=y_train, k=k, prob = TRUE)
+
+```
+
+
+## Model Performance
+```{r}
+table(knn_Model, y_test)
+```
+
+```{r}
+
+CrossTable(x = y_test, y = knn_Model,prop.chisq=F)
+
+
+```
+
+
+## Accuracy
+
+```{r}
+cm = as.matrix(table(Actual = y_test, Predicted = knn_Model))
+
+n = sum(cm) # number of instances
+diag = diag(cm) # number of correctly classified instances per class 
+
+
+
+accuracy = sum(diag) / n
+
+cat("The accuracy for the KNN  model is : ", accuracy, '\n', 'With k = ', k)
+
+```
+
+
+## Tune K
+
+```{r}
+k <- c(1,3,5,7,9,11,15,27,39)
+(knnmodel <- tune.knn(X_test,  y_test , k = k, tunecontrol = tune.control(sampling = "boot")))
+
+
+```
+
+
+
+
+```{r}
+plot(knnmodel)
+```
+
+
+
+
+
+The error rate the converge,due to time constraints, the whole training set provided can not be used.
+
+
+
+
+
+## SVM
+
+Surport vector machine is machine learning algorithm that seperate data using hyperplane.it can be used and perform well with data's that has non-regularity. i.e the distribution is not known.
+
+The svm used for this analysis is from e1071 packages
+
+## Linear Kenel
+
+```{r}
+
+tuned_cost <- tune(svm,label~., data=X_train_with_label,
+                   kernel="linear", 
+                   ranges=list(cost=c(.01,.1,1,10,100,100)))
+
+
+
+print(tuned_cost)
+
+```
+
+
+
+
+```{r}
+plot(tuned_cost)
+
+```
+
+
+
+## Polinomial Kenel
+
+```{r}
+
+
+SVM_model_P <- svm(label~., data=X_test_with_label, 
+                 kernel="polynomial", cost=.1, 
+                 scale=FALSE)
+
+print(SVM_model_P)
+
+```
+
+
+
+```{r}
+predict_svm <- predict(SVM_model_P, X_test)
+
+confusionMatrix(predict_svm, y_test)
+
+```
+
+
+## Radial Kenel
+
+```{r}
+
+
+SVM_model_P <- svm(label~., data=X_test_with_label, 
+                 kernel="radial", cost=.1, 
+                 scale=FALSE)
+
+print(SVM_model_P)
+
+```
+
+
+
+```{r}
+predict_svm <- predict(SVM_model_P, X_test)
+
+confusionMatrix(predict_svm, y_test)
+
+
+```
+
+
+ Model                       Accuracy              Parameters
+ 
+
+1. Random Forest              95%                  ntree =200, mtry =28 
+1. KNN                        81%                 k = 35
+1. SVM
+
+
+
+
+
+Random Forest
+The best performing model is random forest with accuracy of 96% for an unseen data. The optimal parameters for the random forest are :
+1. number of trees is 300
+2. the mtry is 28.
+SVM
+The linear kernel of suport vector machine has the worst performance and was unable to accurately predict the data.The cost function was varied,and still, the model can not accurately predict the dataset.
+The radial kernel has an accuracy of about 85% using parameter tuning. the bestperformance is when cost=1 and gamma=0.002.
+The polinomial kernel, after using the parater tuning, has an accuracy of  about 96% with cost= 0.1
+
+
+
+
+
+
+
+
+
