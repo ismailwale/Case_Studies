@@ -11,3 +11,5 @@
 1. [Time Series Analysis Using ARIMA](https://github.com/toraaglobal/CaseStudies/blob/master/time_series_api_quandi_stock_analysis.ipynb): Using Quandi API to retrieve Financial Data for Analysis
 1. [Time Series Forcasting Using Prophet](https://github.com/toraaglobal/CaseStudies/blob/master/Time_Series_BeverageTimeForProphet.ipynb): Forcasting Berverages Sales
 1. [Time Series Forcasting Using Prophet](https://github.com/toraaglobal/CaseStudies/blob/master/TimeForRetailProphet.ipynb): Forcasting Deparmental Sales of a Retail Outlets Using Prophet
+1. [USING BANK DEMOGRAPHY INFORMATION TO DETERMINE WHO WILL OBTAIN THE NEW PERSONAL EQUITY PLAN ](https://github.com/toraaglobal/Case_Studies/blob/master/hm3_Tajudeen_Abdulazeez.pdf): Association Rule Mining
+    * [R Code](https://github.com/toraaglobal/Case_Studies/blob/master/hm3.R)
