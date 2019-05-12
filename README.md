@@ -13,3 +13,5 @@
 1. [Time Series Forcasting Using Prophet](https://github.com/toraaglobal/CaseStudies/blob/master/TimeForRetailProphet.ipynb): Forcasting Deparmental Sales of a Retail Outlets Using Prophet
 1. [Using Bank Demography Information To Determine Who Will Obtain The New Personal Equity Plan.](https://github.com/toraaglobal/Case_Studies/blob/master/hm3_Tajudeen_Abdulazeez.pdf): Association Rule Mining
     * [R Code](https://github.com/toraaglobal/Case_Studies/blob/master/hm3.R)
+1. [Digit Recognision with R](https://github.com/toraaglobal/Case_Studies/blob/master/hm7_Tajudeen.pdf): SVM, KNN and Randon Forest
+    * [R Scripts](https://github.com/toraaglobal/Case_Studies/blob/master/hw7.R)
