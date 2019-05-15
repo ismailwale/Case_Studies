@@ -18,3 +18,4 @@
 1. [Evidence Based Investment](https://github.com/toraaglobal/Case_Studies/blob/master/EvidenceBasedInvesting.ipynb): Based on the Monte Carlo Simulation notebook developed by Matt Macarty
 1. [Strawberries QA Creation](https://github.com/toraaglobal/Case_Studies/blob/master/StrawberriesQACreation.ipynb): BASED ON EXAMPLE FROM STACKEXCHANGE - JahKnows (2018)
 1. [Simple Reccommender Using suprise](https://github.com/toraaglobal/Case_Studies/blob/master/TheSimpleRecommender.ipynb)
+1. [Reccommender System](https://github.com/toraaglobal/Case_Studies/blob/master/Spring2SU_RecommenderSample.ipynb): Spring2SU_RecommenderSample
