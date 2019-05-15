@@ -15,3 +15,6 @@
     * [R Code](https://github.com/toraaglobal/Case_Studies/blob/master/hm3.R)
 1. [Digit Recognision with R](https://github.com/toraaglobal/Case_Studies/blob/master/hm7_Tajudeen.pdf): SVM, KNN and Randon Forest
     * [R Scripts](https://github.com/toraaglobal/Case_Studies/blob/master/hw7.R)
+1. [Evidence Based Investment](https://github.com/toraaglobal/Case_Studies/blob/master/EvidenceBasedInvesting.ipynb): Based on the Monte Carlo Simulation notebook developed by Matt Macarty
+1. [Strawberries QA Creation](https://github.com/toraaglobal/Case_Studies/blob/master/StrawberriesQACreation.ipynb): BASED ON EXAMPLE FROM STACKEXCHANGE - JahKnows (2018)
+1. [Reccommender Using suprise](https://github.com/toraaglobal/Case_Studies/blob/master/TheSimpleRecommender.ipynb)
