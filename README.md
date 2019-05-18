@@ -1,5 +1,6 @@
 #### Table of Content
 ***
+1. [Text Mining](https://github.com/toraaglobal/Case_Studies/tree/master/Text_Mining-master)
 1. [Predicting Football Head Coach Salary](https://github.com/toraaglobal/CaseStudies/blob/master/regression_coaches_salary_prediction.ipynb) : Making a salary Reccommendation for Syracuse Head Coach.
 1. [Sustanability Claims](https://github.com/toraaglobal/CaseStudies/blob/master/regression_and_classification_SustainableLook.ipynb)
 1. [TGS Salt Identification Challenge](https://github.com/toraaglobal/CaseStudies/blob/master/image_unet_salt_identification_kaggle_competition.ipynb)
