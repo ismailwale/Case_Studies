@@ -6,3 +6,4 @@
 1. [Collecting Tweets Using Tweepy](https://github.com/toraaglobal/Case_Studies/blob/master/Text_Mining-master/twitter_mining_for_sentiment_classification.ipynb): Prepared the tweets for sentiment label using AMT
 1. [Sentiment Label from AMT](https://github.com/toraaglobal/TextMining/blob/master/text_sklearn_cohen_kappa.ipynb): Comparing sentiment label acquired through AMT to random label
 1. [R Scripts for Fedpapers Authorship Attribution Distpute Resolution](https://github.com/toraaglobal/Case_Studies/blob/master/Text_Mining-master/hm5.R): Decision Tree, Clustering
+1. [Topic Modling Tutorial Using Mallet](https://github.com/toraaglobal/Case_Studies/blob/master/Text_Mining-master/8.4.1_unit8-mallet-tutorial.docx)
